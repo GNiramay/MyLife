@@ -208,6 +208,41 @@
     }
     .btn-export:active { background: #3f3f46; border-color: #6366f1; }
 
+    /* Install View */
+    .btn-install-prompt {
+      width: 100%;
+      min-height: 52px;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      touch-action: manipulation;
+    }
+    .btn-install-prompt:active { background: #4338ca; }
+    .install-box { display: flex; flex-direction: column; gap: 14px; }
+    .install-title { font-size: 18px; font-weight: 700; color: #fff; }
+    .install-sub { color: #a1a1aa; font-size: 14px; line-height: 1.5; }
+    .install-card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .install-card h3 { font-size: 15px; font-weight: 600; color: #818cf8; }
+    .install-note { font-size: 13px; color: #a1a1aa; line-height: 1.5; }
+    .install-steps { margin-left: 20px; color: #d4d4d8; font-size: 13px; line-height: 1.6; }
+    .install-steps li { margin-bottom: 6px; }
+    .install-steps code { background: #27272a; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #e4e4e7; }
+
     /* Toast */
     #toast {
       position: fixed;
@@ -251,6 +286,7 @@
       <button data-view="graphs">Graphs</button>
       <button data-view="manage">Manage</button>
       <button data-view="export">Export</button>
+      <button data-view="install">Install</button>
     </nav>
   </header>
   <main>
@@ -298,6 +334,39 @@
       <p class="export-desc">Export timestamps for analysis in spreadsheet or data science tools.</p>
       <button id="export-log-btn" class="btn-export">Export Event Log (CSV)</button>
       <button id="export-matrix-btn" class="btn-export">Export Daily Matrix (CSV)</button>
+    </section>
+
+    <section id="install-view" class="view">
+      <div class="install-box">
+        <h2 class="install-title">Install MyLife on Your Phone</h2>
+        <p class="install-sub">Install this web app to your home screen to use it full-screen and 100% offline without needing internet.</p>
+
+        <button id="btn-pwa-install" class="btn-install-prompt" style="display:none;">📲 Tap Here to Install App</button>
+
+        <div class="install-card">
+          <h3>Android (Google Chrome)</h3>
+          <ol class="install-steps">
+            <li>Tap the <strong>three vertical dots (⋮)</strong> in the top-right corner of Chrome.</li>
+            <li>Look for and tap <strong>"Install app"</strong> (or <strong>"Add to Home screen"</strong>).</li>
+            <li>Tap <strong>"Install"</strong> in the popup prompt.</li>
+            <li>The MyLife app icon will appear on your phone's home screen. Open it to use full-screen!</li>
+          </ol>
+        </div>
+
+        <div class="install-card">
+          <h3>Other Browsers on Android</h3>
+          <p class="install-note"><strong>Samsung Internet / Edge / Firefox:</strong> Tap the browser menu icon (<strong>⋮</strong> or <strong>☰</strong>) at the bottom or top right, then select <strong>"Install"</strong> or <strong>"Add page to" &gt; "Home screen"</strong>.</p>
+        </div>
+
+        <div class="install-card">
+          <h3>iPhone (Apple Safari)</h3>
+          <ol class="install-steps">
+            <li>Tap the <strong>Share</strong> button (the square icon with an arrow pointing up at the bottom).</li>
+            <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+            <li>Tap <strong>"Add"</strong> in the top-right corner.</li>
+          </ol>
+        </div>
+      </div>
     </section>
   </main>
   <div id="toast" role="alert"></div>

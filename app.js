@@ -302,7 +302,26 @@ window.seedDemoData = async () => {
   await render(); console.log(`Seeded ${evs.length} demo events.`);
 };
 
+let deferredPrompt = null;
+window.addEventListener?.('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('btn-pwa-install');
+  if (btn) btn.style.display = 'flex';
+});
+
 document.addEventListener('DOMContentLoaded', () => {
+  const pwaBtn = document.getElementById('btn-pwa-install');
+  if (pwaBtn) {
+    pwaBtn.onclick = async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice.outcome === 'accepted') pwaBtn.style.display = 'none';
+        deferredPrompt = null;
+      }
+    };
+  }
   document.getElementById('button-list').onclick = e => {
     const b = e.target.closest('.btn-action');
     if (b) tapButton(cachedButtons.find(x => x.id === +b.dataset.id));
