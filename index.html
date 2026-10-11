@@ -69,6 +69,7 @@
     .btn-action:active { background: #2a2a36; border-color: #6366f1; }
     .btn-label { font-size: 17px; font-weight: 600; }
     .btn-last { font-size: 13px; color: #a1a1aa; }
+    [style] .btn-last, [style] .hist-ts { color: inherit; opacity: .75; }
 
     /* History View */
     .history-actions { margin-bottom: 12px; }
@@ -163,9 +164,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 8px;
     }
-    .manage-label { font-size: 15px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; }
+    .manage-label { font-size: 15px; font-weight: 600; flex: 1; min-width: 40%; overflow: hidden; text-overflow: ellipsis; }
     .manage-archived { opacity: 0.55; }
     .badge-archived { font-size: 11px; background: #3f3f46; color: #a1a1aa; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
     .manage-btns { display: flex; gap: 6px; }

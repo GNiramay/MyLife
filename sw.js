@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mylife-v2';
+const CACHE_NAME = 'mylife-v3';
 const ASSETS = ['./', './index.html', './app.js', './chart.min.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

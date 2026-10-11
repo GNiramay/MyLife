@@ -119,6 +119,15 @@ async function reorderButton(id, dir) {
   await render();
 }
 
+async function setColor(id, color) {
+  const b = cachedButtons.find(x => x.id === id);
+  b.color = color;
+  await tx('buttons', 'readwrite', s => s.put(b));
+  await render();
+}
+
+const bg = c => c ? `style="background:${c};color:${[1, 3, 5].reduce((l, i, k) => l + parseInt(c.substr(i, 2), 16) * [.299, .587, .114][k], 0) > 150 ? '#000' : '#fff'}"` : '';
+
 async function toggleArchive(id) {
   const b = cachedButtons.find(x => x.id === id);
   if (!b) return;
@@ -223,15 +232,15 @@ async function render() {
   events.forEach(e => { lastMap[e.buttonId] = e.ts; });
 
   document.getElementById('button-list').innerHTML = cachedButtons.filter(b => !b.archived).map(b => `
-    <button class="btn-action" data-id="${b.id}">
+    <button class="btn-action" data-id="${b.id}" ${bg(b.color)}>
       <span class="btn-label">${b.label}</span>
       <span class="btn-last">${fmtLast(lastMap[b.id])}</span>
     </button>`).join('');
 
-  const btnMap = new Map(cachedButtons.map(b => [b.id, b.label])), recent = events.slice(-100).reverse();
+  const btnMap = new Map(cachedButtons.map(b => [b.id, b])), recent = events.slice(-100).reverse();
   document.getElementById('history-list').innerHTML = recent.length ? recent.map(e => `
-    <li class="history-item">
-      <div><div class="hist-label">${btnMap.get(e.buttonId) || 'Deleted'}</div><div class="hist-ts">${e.ts.replace('T', ' ')}</div></div>
+    <li class="history-item" ${bg(btnMap.get(e.buttonId)?.color)}>
+      <div><div class="hist-label">${btnMap.get(e.buttonId)?.label || 'Deleted'}</div><div class="hist-ts">${e.ts.replace('T', ' ')}</div></div>
       <button class="btn-del" data-id="${e.id}" aria-label="Delete">✕</button>
     </li>`).join('') : '<li class="empty-state">No events recorded yet</li>';
 
@@ -239,6 +248,8 @@ async function render() {
     <li class="manage-item ${b.archived ? 'manage-archived' : ''}">
       <span class="manage-label">${b.label}${b.archived ? '<span class="badge-archived">Archived</span>' : ''}</span>
       <div class="manage-btns">
+        <input type="color" class="btn-icon" data-color="${b.id}" value="${b.color || '#1e1e24'}">
+        ${b.color ? `<button class="btn-icon" data-clear="${b.id}">⌫</button>` : ''}
         <button class="btn-icon" data-reorder="${b.id}" data-dir="-1">↑</button>
         <button class="btn-icon" data-reorder="${b.id}" data-dir="1">↓</button>
         <button class="btn-icon" data-rename="${b.id}">✎</button>
@@ -331,6 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (d) deleteEvent(+d.dataset.id);
   };
   document.getElementById('manage-list').onclick = e => {
+    const clr = e.target.closest('[data-clear]');
+    if (clr) return setColor(+clr.dataset.clear, '');
     const up = e.target.closest('[data-reorder]');
     if (up) return reorderButton(+up.dataset.reorder, +up.dataset.dir);
     const ren = e.target.closest('[data-rename]');
@@ -338,6 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const arc = e.target.closest('[data-archive]');
     if (arc) return toggleArchive(+arc.dataset.archive);
   };
+  document.getElementById('manage-list').onchange = e => e.target.dataset.color && setColor(+e.target.dataset.color, e.target.value);
   document.getElementById('add-btn-submit').onclick = addCustomButton;
   document.getElementById('new-btn-input').onkeydown = e => { if (e.key === 'Enter') addCustomButton(); };
   document.getElementById('chart-type').onchange = () => tx('events', 'readonly', s => s.getAll()).then(renderChart);
