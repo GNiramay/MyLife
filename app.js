@@ -199,6 +199,26 @@ function renderChart(events) {
       data: { labels, datasets: [{ label: 'Count', data: labels.map(d => map[d]), backgroundColor: '#6366f1' }] },
       options: { scales: { x: { title: { display: true, text: 'Date' } }, y: { title: { display: true, text: 'Count (events/day)' }, beginAtZero: true } } }
     };
+  } else if (type === 'time-date' || type === 'time-dow') {
+    const dow = type === 'time-dow', names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const bEvs = evs.filter(e => e.buttonId === +btnSelect.value);
+    const times = bEvs.map(e => { const d = new Date(e.ts); return d.getHours() + d.getMinutes() / 60; });
+    const shList = times.map(h => (h >= 18 ? h - 18 : h + 6));
+    const shift = shList.length && [...shList].sort((a, b) => a - b)[shList.length >> 1] < 12;
+    const hhmm = v => { const m = Math.round(((shift ? 18 : 0) + v) * 60) % 1440; return `${p2(m / 60 | 0)}:${p2(m % 60)}`; };
+    const xOf = e => { const d = new Date(e.ts); return dow ? (d.getDay() + 6) % 7 : Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5; };
+    const xFmt = v => dow ? names[v] : new Date(v * 864e5).toISOString().slice(0, 10);
+    chartConfig = {
+      type: 'scatter',
+      data: { datasets: [{ label: 'Events', data: bEvs.map((e, i) => ({ x: xOf(e), y: shift ? shList[i] : times[i] })), backgroundColor: 'rgba(99,102,241,.6)', pointRadius: 5 }] },
+      options: {
+        scales: {
+          x: { title: { display: true, text: dow ? 'Day of Week' : 'Date' }, ticks: { precision: 0, callback: xFmt, ...(dow && { stepSize: 1 }) }, ...(dow && { min: -1, max: 7 }) },
+          y: { title: { display: true, text: 'Time of Day (HH:MM)' }, min: 0, max: 24, ticks: { stepSize: 2, callback: hhmm } }
+        },
+        plugins: { tooltip: { callbacks: { label: c => `${xFmt(c.parsed.x)} ${hhmm(c.parsed.y)}` } } }
+      }
+    };
   } else if (type === 'sleep') {
     const pairs = parsePairs(evs);
     chartConfig = {
